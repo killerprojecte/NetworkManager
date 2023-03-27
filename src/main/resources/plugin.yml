@@ -1,0 +1,7 @@
+name: ReverseNetX
+version: '${version}'
+main: dev.rgbmc.reversenetx.ReverseNetX
+api-version: 1.13
+authors: [ FlyProject ]
+description: Reverse HTTP/HTTPS connections to a specific url
+website: https://rgbmc.wiki
