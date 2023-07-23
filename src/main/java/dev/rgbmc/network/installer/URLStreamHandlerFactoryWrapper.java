@@ -1,4 +1,4 @@
-package dev.rgbmc.reversenetx.utils;
+package dev.rgbmc.network.installer;
 
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;

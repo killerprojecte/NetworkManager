@@ -1,4 +1,4 @@
-package dev.rgbmc.reversenetx.utils;
+package dev.rgbmc.network.installer;
 
 import sun.misc.Unsafe;
 
@@ -60,7 +60,7 @@ public class Installer {
         }
     }
 
-    protected static Field getStaticURLStreamHandlerFactoryField() {
+    public static Field getStaticURLStreamHandlerFactoryField() {
         Field[] fields = URL.class.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             if (Modifier.isStatic(fields[i].getModifiers()) && fields[i].getType().equals(URLStreamHandlerFactory.class)) {

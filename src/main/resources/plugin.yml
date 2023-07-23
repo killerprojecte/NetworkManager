@@ -1,7 +1,19 @@
-name: ReverseNetX
+name: NetworkManager
 version: '${version}'
-main: dev.rgbmc.reversenetx.ReverseNetX
+main: dev.rgbmc.network.NetworkManager
 api-version: 1.13
 authors: [ FlyProject ]
-description: Reverse HTTP/HTTPS connections to a specific url
-website: https://rgbmc.wiki
+description: A utility for managing external network traffic to your Minecraft server
+commands:
+  networkmanager:
+    permission: networkmanager.admin
+    aliases:
+      - nman
+      - netman
+      - nmanager
+      - network
+      - netmanager
+      - nm
+permissions:
+  networkmanager.admin:
+    default: op

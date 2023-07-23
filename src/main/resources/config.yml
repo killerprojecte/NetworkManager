@@ -1,2 +1,8 @@
+#DEBUG模式 输出所有请求地址
+debug: false
+#替换地址
 reverse:
-  "http://ip-api\\.com/json/": "https://api.ipify.org"
+  "https://example_dot_org": "https://api.ipify.org"
+#替换内容
+replace:
+  "https://example_dot_org": "Test Content"
