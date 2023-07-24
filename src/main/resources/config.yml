@@ -1,8 +1,14 @@
 #DEBUG模式 输出所有请求地址
 debug: false
+#DEBUG模式下输出调用信息(Stacktrace)
+stacktrace: false
+#DEBUG模式输出内容
+show-response: false
 #替换地址
+#需使用正则匹配格式
 reverse:
   "https://example_dot_org": "https://api.ipify.org"
 #替换内容
+#需使用正则匹配格式
 replace:
   "https://example_dot_org": "Test Content"

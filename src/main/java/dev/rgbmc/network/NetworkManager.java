@@ -29,10 +29,13 @@ public final class NetworkManager extends JavaPlugin {
     public static NetworkManager instance;
     private static Map<String, URLStreamHandler> handlers = null;
     private static boolean DEBUG = false;
+    private static boolean TRACE = false;
 
     static {
         saveFile("config.yml");
         config.refreshPoint(YamlConfiguration.loadConfiguration(new File(System.getProperty("user.dir") + "/plugins/NetworkManager/", "config.yml")));
+        DEBUG = config.getBoolean("debug");
+        TRACE = config.getBoolean("stacktrace");
         install();
     }
 
@@ -77,6 +80,16 @@ public final class NetworkManager extends JavaPlugin {
         }
     }
 
+    public static String getStreamContent(InputStream inputStream) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        return stringBuilder.toString();
+    }
+
     private static void install() {
         logger.info("正在注入URL处理器");
         try {
@@ -98,7 +111,9 @@ public final class NetworkManager extends JavaPlugin {
                 protected URLConnection openConnection(URL u) {
                     String url = u.toString();
                     if (DEBUG) {
-                        new Exception("NetworkManager Debugger: " + url).printStackTrace();
+                        if (TRACE) {
+                            new Exception("NetworkManager Debugger: " + url).printStackTrace();
+                        }
                         logger.warning("正在请求: " + url);
                         logger.warning("格式化地址: " + url.replace(".", "_dot_"));
                     }
@@ -175,7 +190,7 @@ public final class NetworkManager extends JavaPlugin {
             Section section = config.getSection("replace");
             for (String key : section.getKeys(false)) {
                 String formatted = key.replace("_dot_", ".");
-                if (url.startsWith(formatted)) {
+                if (url.matches(formatted)) {
                     return getReplacedContent(rUrl, section.getString(key), protocol);
                 }
             }
@@ -191,8 +206,8 @@ public final class NetworkManager extends JavaPlugin {
             Section section = config.getSection("reverse");
             for (String key : section.getKeys(false)) {
                 String formatted = key.replace("_dot_", ".");
-                if (url.startsWith(formatted)) {
-                    String reversed = url.replace(formatted, section.getString(key));
+                if (url.matches(formatted)) {
+                    String reversed = url.replaceAll(formatted, section.getString(key));
                     rUrl = new URL(reversed);
                     cachedURLs.put(url, rUrl);
                 }
@@ -301,7 +316,11 @@ public final class NetworkManager extends JavaPlugin {
         try {
             Method method = handler.getClass().getDeclaredMethod("openConnection", URL.class);
             MethodHandle methodHandle = Installer.lookup.unreflect(method);
-            return (URLConnection) methodHandle.invoke(handler, url);
+            URLConnection urlConnection = (URLConnection) methodHandle.invoke(handler, url);
+            if (config.getBoolean("show-response")) {
+                logger.warning("地址: " + url.toString() + " 返回内容: " + getStreamContent(urlConnection.getInputStream()));
+            }
+            return urlConnection;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -311,7 +330,11 @@ public final class NetworkManager extends JavaPlugin {
         try {
             Method method = handler.getClass().getDeclaredMethod("openConnection", URL.class, Proxy.class);
             MethodHandle methodHandle = Installer.lookup.unreflect(method);
-            return (URLConnection) methodHandle.invoke(handler, url, proxy);
+            URLConnection urlConnection = (URLConnection) methodHandle.invoke(handler, url, proxy);
+            if (config.getBoolean("show-response")) {
+                logger.warning("地址: " + url.toString() + " 返回内容: " + getStreamContent(urlConnection.getInputStream()));
+            }
+            return urlConnection;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -346,6 +369,7 @@ public final class NetworkManager extends JavaPlugin {
         config.refreshPoint(YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml")));
         getLogger().info("NetworkManager 配置文件已重载");
         DEBUG = config.getBoolean("debug");
+        TRACE = config.getBoolean("stacktrace");
         getLogger().info("DEBUG 状态: " + DEBUG);
     }
 
