@@ -317,8 +317,11 @@ public final class NetworkManager extends JavaPlugin {
             Method method = handler.getClass().getDeclaredMethod("openConnection", URL.class);
             MethodHandle methodHandle = Installer.lookup.unreflect(method);
             URLConnection urlConnection = (URLConnection) methodHandle.invoke(handler, url);
-            if (config.getBoolean("show-response")) {
-                logger.warning("地址: " + url.toString() + " 返回内容: " + getStreamContent(urlConnection.getInputStream()));
+            try {
+                if (config.getBoolean("show-response")) {
+                    logger.warning("地址: " + url.toString() + " 返回内容: " + getStreamContent(urlConnection.getInputStream()));
+                }
+            } catch (Exception ignored) {
             }
             return urlConnection;
         } catch (Throwable e) {
