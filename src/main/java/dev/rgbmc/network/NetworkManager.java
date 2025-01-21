@@ -223,6 +223,9 @@ public final class NetworkManager extends JavaPlugin {
     }
 
     private static URLConnection getReplacedContent(URL url, String content, String protocol) throws MalformedURLException {
+        if (DEBUG) {
+            logger.warning("返回已替换的连接: " + url.toString() + " -> " + content);
+        }
         if (protocol.equalsIgnoreCase("http")) {
             return new HttpURLConnection(url) {
                 @Override
@@ -237,13 +240,13 @@ public final class NetworkManager extends JavaPlugin {
 
                 @Override
                 public void connect() throws IOException {
+                    if (DEBUG) {
+                        System.err.println("地址: " + url.toString() + " 内容将被替换为: " + content);
+                    }
                 }
 
                 @Override
                 public InputStream getInputStream() throws IOException {
-                    if (DEBUG) {
-                        logger.info("地址: " + url.toString() + " 内容将被替换为: " + content);
-                    }
                     return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
                 }
 
@@ -287,7 +290,7 @@ public final class NetworkManager extends JavaPlugin {
             @Override
             public void connect() throws IOException {
                 if (DEBUG) {
-                    logger.info("地址: " + url.toString() + " 内容将被替换为: " + content);
+                    System.err.println("地址: " + url.toString() + " 内容将被替换为: " + content);
                 }
             }
 
